@@ -5,8 +5,20 @@ import Link from "next/link";
 import { 
   Truck, Award, Sparkles, ShieldCheck,
   MapPin, ChevronDown, ChevronUp, Instagram, Send, Phone, 
-  Mail, MessageSquare, ShoppingBag, ArrowRight, UploadCloud 
+  Mail, MessageSquare, ShoppingBag, ArrowRight, UploadCloud, X, Trash2 
 } from "lucide-react";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  img: string;
+  category: string;
+}
+
+interface CartItem extends Product {
+  quantity: number;
+}
 
 const SEED_PRODUCTS = [
   { id: "c1", name: "Red Velvet Romance", price: 42.00, img: "https://images.unsplash.com/photo-1586788280802-941ac08994d5?q=80&w=600&auto=format&fit=crop", category: "Signature" },
@@ -18,11 +30,18 @@ const SEED_PRODUCTS = [
 ];
 
 export default function CakeOnCakeStorefront() {
-  const [products, setProducts] = useState<typeof SEED_PRODUCTS>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [cartCount, setCartCount] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [emailInput, setEmailInput] = useState("");
+
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [cakeLettering, setCakeLettering] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("cake_store_products");
@@ -37,9 +56,25 @@ export default function CakeOnCakeStorefront() {
     ? products 
     : products.filter(p => p.category.toLowerCase() === activeCategory.toLowerCase());
 
-  const addToBox = () => {
-    setCartCount(prev => prev + 1);
+  const addToBox = (product: Product) => {
+    setCart(prevCart => {
+      const existing = prevCart.find(item => item.id === product.id);
+      if (existing) {
+        return prevCart.map(item => 
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
+    setIsCartOpen(true);
   };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -53,11 +88,32 @@ export default function CakeOnCakeStorefront() {
     }
   };
 
+  const handleCheckoutSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (cart.length === 0) return;
+
+    alert(
+      `🎂 Order Received Successfully!\n\n` +
+      `👤 Name: ${customerName}\n` +
+      `📞 Phone: ${customerPhone}\n` +
+      `✍️ Name on Cake: ${cakeLettering || "None"}\n` +
+      `📍 Delivery Address: ${deliveryAddress}\n` +
+      `💰 Total Amount: $${totalAmount.toFixed(2)}\n\n` +
+      `Thank you for baking with Cake-On-Cake!`
+    );
+
+    setCart([]);
+    setCustomerName("");
+    setCustomerPhone("");
+    setCakeLettering("");
+    setDeliveryAddress("");
+    setIsCartOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-[#3E2723] font-sans antialiased selection:bg-[#D7CCC8]">
       
-      {/* ─── NAVIGATION HEADER ─── */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#EFEBE9] px-4 sm:px-8 py-4 flex items-center justify-between shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EFEBE9] px-4 sm:px-8 py-4 flex items-center justify-between shadow-xs">
         <Link href="/" className="flex items-center gap-2.5 group">
           <span className="text-2xl">🍰</span>
           <span className="font-black text-xl tracking-tight text-[#4E342E] group-hover:text-[#8D6E63] transition-colors">
@@ -71,10 +127,10 @@ export default function CakeOnCakeStorefront() {
           <Link href="/admin" className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-bold transition-all">
             🛡️ Admin Desk
           </Link>
-          <button onClick={() => alert("Reviewing your Dessert Box selection!")} className="inline-flex items-center gap-2 px-4 py-2 bg-[#4E342E] hover:bg-[#3E2723] text-white rounded-full text-xs font-bold transition-all shadow-xs relative">
+          <button onClick={() => setIsCartOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-[#4E342E] hover:bg-[#3E2723] text-white rounded-full text-xs font-bold transition-all shadow-xs relative cursor-pointer">
             <ShoppingBag className="w-3.5 h-3.5" /> View Dessert Box
             {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-[#D84315] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white animate-scaleIn">
+              <span className="absolute -top-1.5 -right-1.5 bg-[#D84315] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
                 {cartCount}
               </span>
             )}
@@ -82,7 +138,102 @@ export default function CakeOnCakeStorefront() {
         </div>
       </header>
 
-      {/* ─── MAIN HERO BRAND BANNER ─── */}
+      {/* ─── INTERACTIVE DESSERT BOX DRAWER ─── */}
+      {isCartOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end animate-fadeIn">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={() => setIsCartOpen(false)} />
+          
+          <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto z-10 border-l border-[#EFEBE9]">
+            <div className="p-5 border-b border-[#EFEBE9] flex items-center justify-between bg-[#FAF8F5]">
+              <div className="flex items-center gap-2 text-[#4E342E]">
+                <ShoppingBag className="w-5 h-5 text-[#8D6E63]" />
+                <h3 className="font-black text-base tracking-tight">Your Custom Dessert Box</h3>
+              </div>
+              <button onClick={() => setIsCartOpen(false)} className="p-1 rounded-lg hover:bg-slate-200 transition-colors text-slate-500">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 flex-1 space-y-6">
+              {cart.length === 0 ? (
+                <div className="text-center py-16 space-y-2">
+                  <span className="text-4xl block">🧺</span>
+                  <p className="text-xs font-bold text-[#8D6E63]">Your Dessert Box is currently empty.</p>
+                  <p className="text-[11px] text-slate-400">Add some artisanal cakes below to begin customization.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2.5">
+                    <span className="text-[10px] uppercase font-black text-[#A1887F] tracking-wider block">Selected Layers</span>
+                    <div className="max-h-44 overflow-y-auto border border-[#EFEBE9] rounded-xl p-2 bg-[#FAF8F5]/50 divide-y divide-[#EFEBE9]/60">
+                      {cart.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
+                          <div className="flex items-center gap-3">
+                            <img src={item.img} alt={item.name} className="w-10 h-10 rounded-lg object-cover border border-[#EFEBE9]" />
+                            <div>
+                              <h5 className="font-bold text-xs text-[#3E2723]">{item.name}</h5>
+                              <span className="text-[11px] text-[#8D6E63] font-mono">${item.price.toFixed(2)} x {item.quantity}</span>
+                            </div>
+                          </div>
+                          <button onClick={() => removeFromCart(item.id)} className="p-1 text-slate-400 hover:text-red-500 transition-colors" title="Remove item">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-[#4E342E] text-white p-4 rounded-xl flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#D7CCC8]">Total Amount Summary</span>
+                    <span className="text-xl font-black">${totalAmount.toFixed(2)}</span>
+                  </div>
+
+                  <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-3.5 pt-2">
+                    <span className="text-[10px] uppercase font-black text-[#A1887F] tracking-wider block border-b pb-1">Delivery Details & Personalization</span>
+                    
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#5D4037]">Recipient Name *</label>
+                      <input type="text" required placeholder="e.g. Rahul Sharma" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#5D4037]">Contact Number *</label>
+                      <input type="tel" required placeholder="e.g. +91 98765 43210" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#5D4037] flex items-center justify-between">
+                        <span>Name Written On Cake</span>
+                        <span className="text-[10px] text-slate-400 font-normal">Optional</span>
+                      </label>
+                      <input type="text" placeholder="e.g. Happy 25th Anniversary Mom & Dad" value={cakeLettering} onChange={(e) => setCakeLettering(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" maxLength={50} />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#5D4037]">Complete Delivery Address *</label>
+                      <textarea required rows={2} placeholder="Flat, Street, Area Name, Landmark Location Details..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63] resize-none" />
+                    </div>
+                  </form>
+                </>
+              )}
+            </div>
+
+            <div className="p-5 border-t border-[#EFEBE9] bg-[#FAF8F5]">
+              {cart.length > 0 ? (
+                <button type="submit" form="checkout-form" className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-3.5 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                  Confirm & Secure Order Fulfillment (${totalAmount.toFixed(2)})
+                </button>
+              ) : (
+                <button disabled className="w-full bg-slate-200 text-slate-400 font-bold py-3.5 px-4 rounded-xl text-xs tracking-wider cursor-not-allowed">
+                  Dessert Box is Empty
+                </button>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
       <section className="bg-gradient-to-br from-[#4E342E] to-[#2D1B18] text-white py-16 px-6 text-center shadow-inner">
         <span className="bg-[#A1887F]/30 text-[#D7CCC8] text-[10px] uppercase font-black tracking-widest px-3 py-1 rounded-full border border-[#A1887F]/20">
           Artisanal Bakery Studio
@@ -95,7 +246,6 @@ export default function CakeOnCakeStorefront() {
         </p>
       </section>
 
-      {/* ─── LIVE PRODUCTS GRID WORKSPACE ─── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-12">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EFEBE9] pb-6 mb-8">
           <div>
@@ -143,7 +293,7 @@ export default function CakeOnCakeStorefront() {
                   <h4 className="font-black text-[#3E2723] text-base tracking-tight group-hover:text-[#7A5C53] transition-colors">{cake.name}</h4>
                   <div className="text-xl font-black text-[#2E1C1A] mt-1">${cake.price.toFixed(2)}</div>
                 </div>
-                <button onClick={addToBox} className="mt-5 w-full bg-[#FAF6F0] hover:bg-[#4E342E] text-[#5D4037] hover:text-white font-bold py-3 px-4 rounded-xl text-xs transition-all tracking-wide flex items-center justify-center gap-2 border border-[#EFEBE9] cursor-pointer">
+                <button onClick={() => addToBox(cake)} className="mt-5 w-full bg-[#FAF6F0] hover:bg-[#4E342E] text-[#5D4037] hover:text-white font-bold py-3 px-4 rounded-xl text-xs transition-all tracking-wide flex items-center justify-center gap-2 border border-[#EFEBE9] cursor-pointer">
                   Add to Box
                 </button>
               </div>
@@ -152,7 +302,6 @@ export default function CakeOnCakeStorefront() {
         )}
       </main>
 
-      {/* ─── 1. WHY CHOOSE US ─── */}
       <section className="bg-white border-y border-[#EFEBE9] py-16 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h3 className="text-2xl font-black tracking-tight text-[#3E2723]">Why Choose Cake-On-Cake</h3>
@@ -175,7 +324,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 2. SHOP BY OCCASION ─── */}
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <h3 className="text-2xl font-black tracking-tight text-[#3E2723]">Shop By Occasion</h3>
@@ -188,7 +336,7 @@ export default function CakeOnCakeStorefront() {
             { label: "Wedding Cakes", emoji: "💍", img: "https://images.unsplash.com/photo-1522683280249-02ece792881a?q=80&w=400&auto=format&fit=crop" },
             { label: "Baby Shower", emoji: "🍼", img: "https://images.unsplash.com/photo-1519340333755-56e87a7d402e?q=80&w=400&auto=format&fit=crop" },
             { label: "Graduation", emoji: "🎓", img: "https://images.unsplash.com/photo-1546173159-315724a31696?q=80&w=400&auto=format&fit=crop" },
-            { label: "Valentine's", emoji: "🌹", img: "https://images.unsplash.com/photo-1570784294677-ae52e421FA65?q=80&w=400&auto=format&fit=crop" }
+            { label: "Valentine&apos;s", emoji: "🌹", img: "https://images.unsplash.com/photo-1570784294677-ae52e421FA65?q=80&w=400&auto=format&fit=crop" }
           ].map((occ, i) => (
             <div key={i} className="group relative h-44 rounded-2xl overflow-hidden border border-[#EFEBE9] cursor-pointer shadow-xs">
               <img src={occ.img} alt={occ.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
@@ -201,7 +349,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 3. CUSTOM CAKE BANNER SECTION ─── */}
       <section className="px-4 max-w-7xl mx-auto mb-16">
         <div className="bg-gradient-to-r from-[#DFD3C3] via-[#F4EAE1] to-[#E7DEC9] border border-[#D7CCC8] rounded-3xl p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
           <div className="absolute -right-10 -bottom-10 text-9xl opacity-10 select-none">🎂</div>
@@ -218,7 +365,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 4. CUSTOMER REVIEWS ─── */}
       <section className="bg-white border-y border-[#EFEBE9] py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
@@ -242,7 +388,7 @@ export default function CakeOnCakeStorefront() {
                   <p className="text-xs text-[#4E342E] font-medium leading-relaxed italic">&ldquo;{rev.review}&rdquo;</p>
                 </div>
                 <div className="text-[10px] text-[#8D6E63] font-bold border-t border-[#EFEBE9] pt-2 flex justify-between">
-                  <span>— {rev.author}</span>
+                  <span>&mdash; {rev.author}</span>
                   <span className="text-amber-800 font-normal">📍 {rev.loc}</span>
                 </div>
               </div>
@@ -251,7 +397,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 5. DELIVERY LOCATIONS ─── */}
       <section className="py-12 px-4 max-w-7xl mx-auto text-center border-b border-[#EFEBE9]">
         <span className="text-[10px] uppercase font-black tracking-widest text-[#A1887F] block mb-2">Regional Logistics Map</span>
         <h4 className="text-sm font-bold text-[#3E2723] flex items-center justify-center gap-1.5 mb-4">
@@ -266,7 +411,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 6. SPECIAL OFFERS ─── */}
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <h3 className="text-2xl font-black tracking-tight text-[#3E2723]">Exclusive Special Offers</h3>
@@ -287,7 +431,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 7. FAQ ACCORDION SECTION ─── */}
       <section className="bg-white border-y border-[#EFEBE9] py-16 px-4">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
@@ -298,7 +441,7 @@ export default function CakeOnCakeStorefront() {
             {[
               { q: "How do I place an order?", a: "Simply browse our active storefront products grid, tap 'Add to Box' on your selected items, and confirm your selection via the checkout sequence." },
               { q: "Do you offer same-day delivery?", a: "Yes! All local bakery operations across our listed delivery networks support safe fulfillment for orders completed before 4:00 PM." },
-              { q: "Can I customize my cake design specification?", a: "Absolutely. Tap our Design Custom Cake layout tab to submit reference graphics, text messages, and pick alternative layer options." },
+              { q: "Can I customize my cake design specification?", a: "Absolutely. Tap our 'Design Custom Cake' layout tab to submit reference graphics, text messages, and pick alternative layer options." },
               { q: "What payment methods are securely accepted?", a: "We support major Credit/Debit processing cards, secure modern wallet systems, Net Banking paths, and local UPI rails." }
             ].map((faq, idx) => (
               <div key={idx} className="border border-[#EFEBE9] rounded-xl overflow-hidden bg-[#FAF8F5]">
@@ -317,7 +460,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 8. INSTAGRAM GALLERY ─── */}
       <section className="py-16 px-4 max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <h3 className="text-2xl font-black tracking-tight text-[#3E2723] flex items-center justify-center gap-1.5">
@@ -346,7 +488,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 9. NEWSLETTER SUBSCRIPTION ─── */}
       <section className="bg-[#4E342E] text-white py-12 px-4 text-center">
         <div className="max-w-md mx-auto space-y-3">
           <h3 className="text-xl font-black tracking-tight">Get Exclusive Cake Offers</h3>
@@ -367,7 +508,6 @@ export default function CakeOnCakeStorefront() {
         </div>
       </section>
 
-      {/* ─── 10. FOOTER ─── */}
       <footer className="bg-[#1E110E] text-[#D7CCC8] pt-16 pb-8 px-6 sm:px-8 border-t border-[#3E2723]">
         <div className="max-w-7xl mx-auto grid gap-8 grid-cols-2 md:grid-cols-5 border-b border-[#3E2723] pb-12 text-xs">
           
@@ -382,7 +522,7 @@ export default function CakeOnCakeStorefront() {
             <h5 className="text-white font-black uppercase text-[10px] tracking-wider text-amber-400">Quick Links</h5>
             <ul className="space-y-2 font-medium">
               <li><Link href="/" className="hover:text-white transition-colors">Home Storefront</Link></li>
-              <li><button onClick={() => alert("Loading standard products collection...")} className="hover:text-white transition-colors text-left cursor-pointer">Shop Catalog</button></li>
+              <li><button onClick={() => setIsCartOpen(true)} className="hover:text-white transition-colors text-left cursor-pointer">Shop Catalog</button></li>
               <li><Link href="/custom" className="hover:text-white transition-colors">Custom Cakes</Link></li>
               <li><span className="opacity-60 cursor-not-allowed">About Bakery Studio</span></li>
               <li><span className="opacity-60 cursor-not-allowed">Contact Us</span></li>
@@ -420,7 +560,7 @@ export default function CakeOnCakeStorefront() {
         </div>
 
         <div className="max-w-7xl mx-auto pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#8D6E63] font-medium">
-          <p>© 2026 Cake-On-Cake Confectionery Studio. All rights reserved.</p>
+          <p>&copy; 2026 Cake-On-Cake Confectionery Studio. All rights reserved.</p>
           <p>Handcrafted using Next.js & Tailwind CSS frameworks.</p>
         </div>
       </footer>
