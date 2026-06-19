@@ -1,108 +1,144 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { getCakes } from "@/lib/supabase";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useCart } from "@/lib/cart-context";
-import type { Cake } from "@/lib/types";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { Search } from 'lucide-react';
+import { useCart } from '@/lib/cart-context';
+import type { Cake } from '@/lib/types';
 
-export default function Home() {
-  const [products, setProducts] = useState<Cake[]>([]);
-  const { cartCount, setIsOpen, addToCart } = useCart();
+const CAKE_PRODUCTS: Cake[] = [
+  { id: 'c1', name: 'Red Velvet Romance', price: 42.00, category: 'Signature', description: '', image_url: 'https://images.unsplash.com/photo-1586788280802-941ac08994d5?auto=format&fit=crop&w=600&q=80', images: [], rating: 0, review_count: 0, weight_options: [], flavour_options: [], ingredients: [], stock: 0, created_at: '' },
+  { id: 'c2', name: 'Classic Chocolate Fudge', price: 38.00, category: 'Signature', description: '', image_url: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80', images: [], rating: 0, review_count: 0, weight_options: [], flavour_options: [], ingredients: [], stock: 0, created_at: '' },
+  { id: 'c3', name: 'Vanilla Bean Dream', price: 35.00, category: 'Pastries', description: '', image_url: 'https://images.unsplash.com/photo-1465014949162-e461f5408bc2?auto=format&fit=crop&w=600&q=80', images: [], rating: 0, review_count: 0, weight_options: [], flavour_options: [], ingredients: [], stock: 0, created_at: '' },
+  { id: 'c4', name: 'Strawberry Shortcake', price: 45.00, category: 'Signature', description: '', image_url: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=600&q=80', images: [], rating: 0, review_count: 0, weight_options: [], flavour_options: [], ingredients: [], stock: 0, created_at: '' },
+  { id: 'c5', name: 'Lemon Blueberry Tart', price: 28.00, category: 'Pastries', description: '', image_url: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=600&q=80', images: [], rating: 0, review_count: 0, weight_options: [], flavour_options: [], ingredients: [], stock: 0, created_at: '' },
+  { id: 'c6', name: 'Matcha Green Tea Crepe', price: 48.00, category: 'Pastries', description: '', image_url: 'https://images.unsplash.com/photo-1536680465769-a36969fdfe70?auto=format&fit=crop&w=600&q=80', images: [], rating: 0, review_count: 0, weight_options: [], flavour_options: [], ingredients: [], stock: 0, created_at: '' }
+];
 
-  useEffect(() => {
-    async function loadCakes() {
-      const data = await getCakes();
-      setProducts(data);
-    }
-    loadCakes();
-  }, []);
+const CATEGORIES = ['All Cakes', 'Signature', 'Pastries'];
+
+export default function StorefrontPage() {
+  const { addToCart, setIsOpen: setIsCartOpen } = useCart();
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Cakes');
+
+  const filteredProducts = CAKE_PRODUCTS.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All Cakes' || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
-    <div className="min-h-screen">
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-md transition-colors">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-[var(--primary)] font-serif">🎂 CAKE-ON-CAKE</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-[var(--muted-fg)]">
-            <a href="#" className="text-[var(--foreground)] hover:text-[var(--primary)] transition-colors">Menu</a>
-            <a href="#" className="hover:text-[var(--primary)] transition-colors">Our Story</a>
-            <a href="#" className="hover:text-[var(--primary)] transition-colors">Custom Orders</a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setIsOpen(true)}
-              className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
-            >
-              View Cart ({cartCount})
-            </button>
-          </div>
+    <div className="min-h-screen bg-[#FAF7F2] text-[#3E2723]">
+      <header className="sticky top-0 z-10 bg-white border-b border-[#EFEBE9] px-6 py-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+        <Link href="/" className="text-2xl font-bold tracking-tight text-[#5D4037] hover:opacity-90 transition-opacity">
+          🍰 Cake-On-Cake Store
+        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/custom-order"
+            className="border border-[#8D6E63] text-[#8D6E63] hover:bg-[#FAF7F2] px-4 py-2 rounded-full font-medium text-sm transition-colors"
+          >
+            ✨ Design Custom Cake
+          </Link>
+          <Link
+            href="/admin"
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-full font-medium text-sm transition-colors"
+          >
+            🛡️ Admin Desk
+          </Link>
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="bg-[#D7CCC8] hover:bg-[#BCAAA4] text-[#3E2723] px-5 py-2 rounded-full font-medium text-sm transition-colors"
+          >
+            View Dessert Box
+          </button>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[var(--secondary)] to-[var(--background)] py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <span className="inline-flex items-center rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-medium text-white ring-1 ring-inset ring-[var(--border)] mb-4">
-            Freshly Baked Every Morning ✨
-          </span>
-          <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-6xl font-serif">
-            Artisanal Confections <br />
-            <span className="text-[var(--primary)]">Crafted with Pure Love</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-[var(--muted-fg)]">
-            Elevate your special moments with premium cakes, hand-selected organic ingredients, and designs customized specifically for your story.
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-extrabold mb-3 text-[#4E342E]">
+            Freshly Baked Bliss, Delivered To Your Doorstep
+          </h2>
+          <p className="text-lg text-[#795548]">
+            Browse our artisanal dessert queues and claim your perfect slice below.
           </p>
         </div>
-      </section>
 
-      {/* Menu / Product Grid */}
-      <main id="menu" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-[var(--foreground)] font-serif">Today&apos;s Fresh Showcase</h2>
-          <p className="mt-2 text-[var(--muted-fg)]">Pick from our freshly baked signature delicacies ready for delivery.</p>
+        <div className="max-w-2xl mx-auto mb-10 space-y-5">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#A1887F] w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search for your favorite cake flavor..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-[#D7CCC8] bg-white text-[#3E2723] placeholder-[#A1887F] focus:outline-none focus:ring-2 focus:ring-[#8D6E63] shadow-sm transition-all"
+            />
+          </div>
+
+          <div className="flex justify-center gap-3 flex-wrap">
+            {CATEGORIES.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold tracking-wide border transition-all ${
+                  selectedCategory === category
+                    ? 'bg-[#5D4037] text-white border-[#5D4037] shadow-md scale-105'
+                    : 'bg-white text-[#5D4037] border-[#D7CCC8] hover:bg-[#F5F5F5]'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-          {products && products.length > 0 ? (
-            products.map((product) => (
-              <Card key={product.id} className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm hover:shadow-md transition-all duration-200">
-                <CardHeader className="p-0">
-                  <div className="aspect-square w-full rounded-xl bg-[var(--muted)] flex items-center justify-center text-5xl group-hover:scale-[1.01] transition-transform duration-300">
-                    🍰
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="mt-4 flex-1 p-2">
-                  <div className="mb-2">
-                    <Badge className="badge-tag text-[10px] font-semibold tracking-wider uppercase bg-[var(--accent)] text-white">
-                      {product.category}
-                    </Badge>
-                  </div>
-                  <h3 className="text-lg font-bold text-[var(--foreground)] tracking-tight">{product.name}</h3>
-                  <p className="mt-1 text-sm text-[var(--muted-fg)] line-clamp-2 leading-relaxed">{product.description}</p>
-                </CardContent>
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredProducts.map((cake) => (
+              <div
+                key={cake.id}
+                className="bg-white rounded-2xl p-6 border border-[#EFEBE9] shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group"
+              >
+                <span className="absolute top-3 right-3 text-xs bg-[#F5F5F5] text-[#795548] px-2.5 py-1 rounded-md font-medium">
+                  {cake.category}
+                </span>
 
-                <CardFooter className="flex items-center justify-between p-2 mt-4 pt-0">
-                  <span className="text-xl font-extrabold text-[var(--foreground)]">${Number(product.price).toFixed(2)}</span>
-                  <button 
-                    onClick={() => addToCart(product)}
-                    className="rounded-xl bg-[var(--primary)] text-white px-4 py-2 text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
-                  >
-                    Add to Box
-                  </button>
-                </CardFooter>
-              </Card>
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12 text-[var(--muted-fg)]">
-              No delicious cakes found.
-            </div>
-          )}
-        </div>
+                <div>
+                  <div className="mb-4 overflow-hidden rounded-xl bg-[#FAF7F2]">
+                    <img 
+                      src={cake.image_url} 
+                      alt={cake.name} 
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold mb-1 text-[#4E342E]">{cake.name}</h3>
+                  <p className="text-2xl font-black text-[#8D6E63] mb-6">
+                    ${cake.price.toFixed(2)}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => addToCart(cake)}
+                  className="w-full bg-[#8D6E63] hover:bg-[#795548] text-white py-3 rounded-xl font-bold transition-colors shadow-sm"
+                >
+                  Add to Box
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-[#D7CCC8] max-w-md mx-auto">
+            <span className="text-4xl block mb-3">🔍</span>
+            <h4 className="text-lg font-bold text-[#4E342E] mb-1">No sweet treats found</h4>
+            <p className="text-sm text-[#A1887F]">
+              Try adjusting your spelling or choosing a different tag filter.
+            </p>
+          </div>
+        )}
       </main>
     </div>
   );

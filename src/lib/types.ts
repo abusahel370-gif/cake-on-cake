@@ -3,6 +3,7 @@ export interface Cake {
   name: string;
   description: string;
   price: number;
+  emoji?: string;
   original_price?: number;
   category: string;
   image_url: string;

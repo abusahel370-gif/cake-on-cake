@@ -1,13 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Cake, Review } from "./types";  
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder-url.supabase.co";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key";
 
-export const supabase =
-  supabaseUrl && supabaseAnonKey
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ── MOCK DATA ────────────────────────────────────────────────────────────────
 export const MOCK_CAKES: Cake[] = [
@@ -423,4 +420,68 @@ export async function createOrder(orderData: {
   }
 
   return { data: order, error: null };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getAdminOrders(): Promise<any[]> {
+  if (!supabase) {
+    return [
+      {
+        id: "mock-1",
+        customer_name: "Alice Baker",
+        customer_email: "alice@example.com",
+        customer_phone: "555-0192",
+        delivery_address: "123 Sugar Lane",
+        delivery_date: "2026-06-25",
+        delivery_time_slot: "12:00 PM - 03:00 PM",
+        total_amount: 85.50,
+        status: "pending",
+        created_at: new Date().toISOString()
+      }
+    ];
+  }
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select(`
+      *,
+      order_items (*)
+    `)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching admin orders:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function updateOrderStatus(orderId: string, status: 'pending' | 'baking' | 'delivered') {
+  if (!supabase) {
+    console.log(`Mock Status updated for ${orderId} to: ${status}`);
+    return { error: null };
+  }
+
+  const { error } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("id", orderId);
+
+  return { error };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getCustomInquiries(): Promise<any[]> {
+  if (!supabase) return [];
+  
+  const { data, error } = await supabase
+    .from("custom_inquiries")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching inquiries:", error);
+    return [];
+  }
+  return data || [];
 }
