@@ -138,41 +138,41 @@ export default function CakeOnCakeStorefront() {
         </div>
       </header>
 
-      {/* ─── INTERACTIVE DESSERT BOX DRAWER ─── */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end animate-fadeIn">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={() => setIsCartOpen(false)} />
           
-          <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto z-10 border-l border-[#EFEBE9]">
-            <div className="p-5 border-b border-[#EFEBE9] flex items-center justify-between bg-[#FAF8F5]">
+          <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto z-10 border-l border-[#EFEBE9]">
+            
+            <div className="p-4 border-b border-[#EFEBE9] flex items-center justify-between bg-[#FAF8F5]">
               <div className="flex items-center gap-2 text-[#4E342E]">
-                <ShoppingBag className="w-5 h-5 text-[#8D6E63]" />
-                <h3 className="font-black text-base tracking-tight">Your Custom Dessert Box</h3>
+                <ShoppingBag className="w-4 h-4 text-[#8D6E63]" />
+                <h3 className="font-black text-sm tracking-tight">Your Custom Dessert Box</h3>
               </div>
               <button onClick={() => setIsCartOpen(false)} className="p-1 rounded-lg hover:bg-slate-200 transition-colors text-slate-500">
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-5 flex-1 space-y-6">
+            <div className="p-4 flex-1 space-y-5">
               {cart.length === 0 ? (
                 <div className="text-center py-16 space-y-2">
-                  <span className="text-4xl block">🧺</span>
-                  <p className="text-xs font-bold text-[#8D6E63]">Your Dessert Box is currently empty.</p>
-                  <p className="text-[11px] text-slate-400">Add some artisanal cakes below to begin customization.</p>
+                  <span className="text-3xl block">🧺</span>
+                  <p className="text-xs font-bold text-[#8D6E63]">Your Dessert Box is empty.</p>
+                  <p className="text-[10px] text-slate-400">Add some artisanal cakes to begin personalization.</p>
                 </div>
               ) : (
                 <>
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     <span className="text-[10px] uppercase font-black text-[#A1887F] tracking-wider block">Selected Layers</span>
-                    <div className="max-h-44 overflow-y-auto border border-[#EFEBE9] rounded-xl p-2 bg-[#FAF8F5]/50 divide-y divide-[#EFEBE9]/60">
+                    <div className="max-h-40 overflow-y-auto border border-[#EFEBE9] rounded-xl p-2 bg-[#FAF8F5]/50 divide-y divide-[#EFEBE9]/60">
                       {cart.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
-                          <div className="flex items-center gap-3">
-                            <img src={item.img} alt={item.name} className="w-10 h-10 rounded-lg object-cover border border-[#EFEBE9]" />
+                        <div key={item.id} className="flex items-center justify-between py-2 first:pt-0 last:pb-0">
+                          <div className="flex items-center gap-2.5">
+                            <img src={item.img} alt={item.name} className="w-9 h-9 rounded-lg object-cover border border-[#EFEBE9]" />
                             <div>
-                              <h5 className="font-bold text-xs text-[#3E2723]">{item.name}</h5>
-                              <span className="text-[11px] text-[#8D6E63] font-mono">${item.price.toFixed(2)} x {item.quantity}</span>
+                              <h5 className="font-bold text-xs text-[#3E2723] line-clamp-1">{item.name}</h5>
+                              <span className="text-[10px] text-[#8D6E63] font-mono">${item.price.toFixed(2)} x {item.quantity}</span>
                             </div>
                           </div>
                           <button onClick={() => removeFromCart(item.id)} className="p-1 text-slate-400 hover:text-red-500 transition-colors" title="Remove item">
@@ -183,22 +183,22 @@ export default function CakeOnCakeStorefront() {
                     </div>
                   </div>
 
-                  <div className="bg-[#4E342E] text-white p-4 rounded-xl flex items-center justify-between">
+                  <div className="bg-[#4E342E] text-white p-3.5 rounded-xl flex items-center justify-between">
                     <span className="text-xs font-bold text-[#D7CCC8]">Total Amount Summary</span>
-                    <span className="text-xl font-black">${totalAmount.toFixed(2)}</span>
+                    <span className="text-lg font-black">${totalAmount.toFixed(2)}</span>
                   </div>
 
-                  <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-3.5 pt-2">
+                  <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-3">
                     <span className="text-[10px] uppercase font-black text-[#A1887F] tracking-wider block border-b pb-1">Delivery Details & Personalization</span>
                     
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#5D4037]">Recipient Name *</label>
-                      <input type="text" required placeholder="e.g. Rahul Sharma" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" />
+                      <input type="text" required placeholder="e.g. Rahul Sharma" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" />
                     </div>
 
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#5D4037]">Contact Number *</label>
-                      <input type="tel" required placeholder="e.g. +91 98765 43210" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" />
+                      <input type="tel" required placeholder="e.g. +91 98765 43210" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" />
                     </div>
 
                     <div className="space-y-1">
@@ -206,25 +206,25 @@ export default function CakeOnCakeStorefront() {
                         <span>Name Written On Cake</span>
                         <span className="text-[10px] text-slate-400 font-normal">Optional</span>
                       </label>
-                      <input type="text" placeholder="e.g. Happy 25th Anniversary Mom & Dad" value={cakeLettering} onChange={(e) => setCakeLettering(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" maxLength={50} />
+                      <input type="text" placeholder="e.g. Happy Birthday!" value={cakeLettering} onChange={(e) => setCakeLettering(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63]" maxLength={50} />
                     </div>
 
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#5D4037]">Complete Delivery Address *</label>
-                      <textarea required rows={2} placeholder="Flat, Street, Area Name, Landmark Location Details..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="w-full text-xs px-3 py-2 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63] resize-none" />
+                      <textarea required rows={2} placeholder="Flat, Street, Area Name, Landmark Location..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] text-[#3E2723] focus:outline-none focus:border-[#8D6E63] resize-none" />
                     </div>
                   </form>
                 </>
               )}
             </div>
 
-            <div className="p-5 border-t border-[#EFEBE9] bg-[#FAF8F5]">
+            <div className="p-4 border-t border-[#EFEBE9] bg-[#FAF8F5]">
               {cart.length > 0 ? (
-                <button type="submit" form="checkout-form" className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-3.5 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
-                  Confirm & Secure Order Fulfillment (${totalAmount.toFixed(2)})
+                <button type="submit" form="checkout-form" className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-3 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                  Confirm Order (${totalAmount.toFixed(2)})
                 </button>
               ) : (
-                <button disabled className="w-full bg-slate-200 text-slate-400 font-bold py-3.5 px-4 rounded-xl text-xs tracking-wider cursor-not-allowed">
+                <button disabled className="w-full bg-slate-200 text-slate-400 font-bold py-3 px-4 rounded-xl text-xs tracking-wider cursor-not-allowed">
                   Dessert Box is Empty
                 </button>
               )}
