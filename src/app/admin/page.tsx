@@ -149,34 +149,83 @@ export default function AdminDashboard() {
             )}
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-6 md:grid-cols-2">
             {inquiries.length === 0 ? (
-              <p className="text-center py-12 bg-white rounded-xl text-slate-400 border">No custom sheets submitted yet.</p>
+              <p className="text-center py-12 bg-white rounded-xl text-slate-400 border col-span-2">
+                No custom sheets submitted yet.
+              </p>
             ) : (
-              inquiries.map((inquiry) => (
-                <div key={inquiry.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-                  <div className="flex justify-between items-start flex-wrap gap-2">
-                    <div>
-                      <span className="text-xs font-mono bg-amber-50 text-amber-700 border border-amber-100 px-2 py-0.5 rounded font-bold">🎂 {inquiry.tier_count} Tier Design</span>
-                      <h3 className="text-lg font-bold text-slate-900 mt-1">{inquiry.customer_name}</h3>
-                      <p className="text-sm text-slate-500">{inquiry.customer_email}</p>
-                    </div>
-                    <span className="text-xs text-slate-400 font-mono">{new Date(inquiry.created_at).toLocaleDateString()}</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100 text-sm">
-                    <div><span className="text-slate-400 font-medium block text-xs uppercase">Sponge Flavor</span><strong className="text-slate-700">{inquiry.cake_flavor}</strong></div>
-                    <div><span className="text-slate-400 font-medium block text-xs uppercase">Outer Frosting</span><strong className="text-slate-700">{inquiry.frosting_layer || inquiry.frosting_flavor}</strong></div>
-                  </div>
+              inquiries.map((inquiry) => {
+                let previewImg = "https://images.unsplash.com/photo-1535141192574-5d4897c13636?q=80&w=600&auto=format&fit=crop";
 
-                  {inquiry.special_message && (
-                    <div className="bg-amber-50/40 border border-amber-100 rounded-xl p-3">
-                      <span className="text-xs font-bold text-amber-800 block mb-0.5">Inscription & Directions:</span>
-                      <p className="text-sm text-amber-950 italic">&ldquo;{inquiry.special_message}&rdquo;</p>
+                const baseFlavor = (inquiry.cake_flavor || "").toLowerCase();
+                if (baseFlavor.includes("chocolate") || baseFlavor.includes("dark fudge")) {
+                  previewImg = "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop";
+                } else if (baseFlavor.includes("red velvet")) {
+                  previewImg = "https://images.unsplash.com/photo-1616541823729-00fe0aacd32c?q=80&w=600&auto=format&fit=crop";
+                } else if (baseFlavor.includes("lemon")) {
+                  previewImg = "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600&auto=format&fit=crop";
+                } else if (baseFlavor.includes("strawberry")) {
+                  previewImg = "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=600&auto=format&fit=crop";
+                }
+
+                return (
+                  <div key={inquiry.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col justify-between">
+                    
+                    <div>
+                      <div className="relative h-40 w-full bg-slate-100">
+                        <img 
+                          src={previewImg} 
+                          alt="Custom Spec Visualizer" 
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs font-mono px-2.5 py-1 rounded-full font-bold shadow-sm">
+                          🎂 {inquiry.tier_count} Tier Request
+                        </div>
+                        <div className="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                          {inquiry.status || 'pending'}
+                        </div>
+                      </div>
+
+                      <div className="p-5 space-y-4">
+                        <div>
+                          <span className="text-xs font-mono text-slate-400 block mb-0.5">INQUIRY ID: #{inquiry.id.slice(0, 6)}</span>
+                          <h3 className="text-xl font-bold text-slate-900 leading-tight">{inquiry.customer_name}</h3>
+                          <p className="text-sm text-slate-500 font-medium">{inquiry.customer_email}</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
+                          <div>
+                            <span className="text-slate-400 font-semibold block text-[10px] uppercase tracking-wider">Sponge Foundation</span>
+                            <strong className="text-slate-700 text-sm block mt-0.5">{inquiry.cake_flavor}</strong>
+                          </div>
+                          <div>
+                            <span className="text-slate-400 font-semibold block text-[10px] uppercase tracking-wider">Outer Coating</span>
+                            <strong className="text-slate-700 text-sm block mt-0.5">{inquiry.frosting_layer || inquiry.frosting_flavor}</strong>
+                          </div>
+                        </div>
+
+                        {inquiry.special_message && (
+                          <div className="bg-amber-50/50 border border-amber-100/60 rounded-xl p-3.5">
+                            <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block mb-1">Inscription Script / Notes:</span>
+                            <p className="text-sm text-amber-950 italic font-medium leading-relaxed">
+                              &ldquo;{inquiry.special_message}&rdquo;
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
-              ))
+
+                    <div className="px-5 pb-5 pt-2 border-t border-slate-50 flex items-center justify-between text-xs text-slate-400 bg-slate-50/50">
+                      <span>Submitted: {new Date(inquiry.created_at).toLocaleDateString()}</span>
+                      <button className="text-slate-700 hover:text-slate-900 font-bold border border-slate-200 bg-white px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+                        Mark Reviewed
+                      </button>
+                    </div>
+
+                  </div>
+                );
+              })
             )}
           </div>
         )}
