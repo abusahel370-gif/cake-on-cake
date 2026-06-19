@@ -562,7 +562,7 @@ export default function CakeOnCakeStorefront() {
           <div className="space-y-3">
             <h5 className="text-white font-black uppercase text-[10px] tracking-wider text-amber-400">Social Media</h5>
             <ul className="space-y-2 font-medium">
-              <li><span className="hover:text-white cursor-pointer block">📸 Instagram Feed</span></li>
+              <li><a href="https://www.instagram.com/cake_on_cake.12?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="hover:text-white cursor-pointer block">📸 Instagram Feed</a></li>
               <li><span className="hover:text-white cursor-pointer block">📘 Facebook Profile</span></li>
             </ul>
           </div>
