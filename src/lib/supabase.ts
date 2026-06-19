@@ -359,7 +359,10 @@ export async function getCakes(opts?: { category?: string; search?: string; limi
   if (opts?.limit) q = q.limit(opts.limit);
   const { data, error } = await q;
   if (error) { console.error(error); return MOCK_CAKES; }
-  return data || [];
+  if (!data || data.length === 0) {
+    return MOCK_CAKES;
+  }
+  return data;
 }
 
 export async function getCakeById(id: string): Promise<Cake | null> {
@@ -374,4 +377,50 @@ export async function getBestSellers(): Promise<Cake[]> {
   const { data, error } = await supabase.from("cakes").select("*").eq("is_best_seller", true).limit(6);
   if (error) return MOCK_CAKES.filter((c) => c.is_best_seller);
   return data || [];
+}
+
+export async function createOrder(orderData: {
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  delivery_address: string;
+  delivery_date: string;
+  delivery_time_slot: string;
+  total_amount: number;
+}, items: { product: Cake; quantity: number }[]) {
+
+  if (!supabase) {
+    console.log("Mock Order Created Successfully (No Supabase client):", { orderData, items });
+    return { data: { id: "mock-order-id" }, error: null };
+  }
+
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .insert([orderData])
+    .select()
+    .single();
+
+  if (orderError) {
+    console.error("Order Insertion Error:", orderError);
+    return { data: null, error: orderError };
+  }
+
+  const orderItemsData = items.map((item) => ({
+    order_id: order.id,
+    cake_id: item.product.id,
+    cake_name: item.product.name,
+    quantity: item.quantity,
+    price_at_purchase: item.product.price
+  }));
+
+  const { error: itemsError } = await supabase
+    .from("order_items")
+    .insert(orderItemsData);
+
+  if (itemsError) {
+    console.error("Order Items Insertion Error:", itemsError);
+    return { data: null, error: itemsError };
+  }
+
+  return { data: order, error: null };
 }

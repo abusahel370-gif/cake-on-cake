@@ -1,16 +1,28 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { getCakes } from "@/lib/supabase";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/lib/cart-context";
+import type { Cake } from "@/lib/types";
 
-export const revalidate = 0;
+export default function Home() {
+  const [products, setProducts] = useState<Cake[]>([]);
+  const { cartCount, setIsOpen, addToCart } = useCart();
 
-export default async function Home() {
-  const products = await getCakes();
+  useEffect(() => {
+    async function loadCakes() {
+      const data = await getCakes();
+      setProducts(data);
+    }
+    loadCakes();
+  }, []);
 
   return (
     <div className="min-h-screen">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-md transition-colors">
+      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--card)]/80 backdrop-blur-md transition-colors">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-[var(--primary)] font-serif">🎂 CAKE-ON-CAKE</span>
@@ -21,8 +33,11 @@ export default async function Home() {
             <a href="#" className="hover:text-[var(--primary)] transition-colors">Custom Orders</a>
           </nav>
           <div className="flex items-center gap-4">
-            <button className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90 transition-opacity cursor-pointer">
-              View Cart (0)
+            <button 
+              onClick={() => setIsOpen(true)}
+              className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              View Cart ({cartCount})
             </button>
           </div>
         </div>
@@ -47,7 +62,7 @@ export default async function Home() {
       {/* Menu / Product Grid */}
       <main id="menu" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-[var(--foreground)] font-serif">Today's Fresh Showcase</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-[var(--foreground)] font-serif">Today&apos;s Fresh Showcase</h2>
           <p className="mt-2 text-[var(--muted-fg)]">Pick from our freshly baked signature delicacies ready for delivery.</p>
         </div>
 
@@ -56,7 +71,6 @@ export default async function Home() {
             products.map((product) => (
               <Card key={product.id} className="group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] p-2 shadow-sm hover:shadow-md transition-all duration-200">
                 <CardHeader className="p-0">
-                  {/* Image Container */}
                   <div className="aspect-square w-full rounded-xl bg-[var(--muted)] flex items-center justify-center text-5xl group-hover:scale-[1.01] transition-transform duration-300">
                     🍰
                   </div>
@@ -74,7 +88,10 @@ export default async function Home() {
 
                 <CardFooter className="flex items-center justify-between p-2 mt-4 pt-0">
                   <span className="text-xl font-extrabold text-[var(--foreground)]">${Number(product.price).toFixed(2)}</span>
-                  <button className="rounded-xl bg-[var(--primary)] text-white px-4 py-2 text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity cursor-pointer">
+                  <button 
+                    onClick={() => addToCart(product)}
+                    className="rounded-xl bg-[var(--primary)] text-white px-4 py-2 text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
+                  >
                     Add to Box
                   </button>
                 </CardFooter>
