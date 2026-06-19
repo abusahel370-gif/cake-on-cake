@@ -28,12 +28,12 @@ interface Review {
 }
 
 const SEED_PRODUCTS = [
-  { id: "c1", name: "Red Velvet Romance", price: 42.00, img: "https://images.unsplash.com/photo-1586788280802-941ac08994d5?q=80&w=600&auto=format&fit=crop", category: "Signature" },
-  { id: "c2", name: "Classic Chocolate Fudge", price: 38.00, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop", category: "Signature" },
-  { id: "c3", name: "Vanilla Bean Dream", price: 35.00, img: "https://images.unsplash.com/photo-1465014949162-e461f5408bc2?q=80&w=600&auto=format&fit=crop", category: "Pastries" },
-  { id: "c4", name: "Strawberry Shortcake", price: 45.00, img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=600&auto=format&fit=crop", category: "Signature" },
-  { id: "c5", name: "Lemon Blueberry Tart", price: 28.00, img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600&auto=format&fit=crop", category: "Pastries" },
-  { id: "c6", name: "Matcha Green Tea Crepe", price: 48.00, img: "https://images.unsplash.com/photo-1536680465769-a36969fdfe70?q=80&w=600&auto=format&fit=crop", category: "Pastries" }
+  { id: "c1", name: "Red Velvet Romance", price: 3507, img: "https://images.unsplash.com/photo-1586788280802-941ac08994d5?q=80&w=600&auto=format&fit=crop", category: "Signature" },
+  { id: "c2", name: "Classic Chocolate Fudge", price: 3173, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop", category: "Signature" },
+  { id: "c3", name: "Vanilla Bean Dream", price: 2922, img: "https://images.unsplash.com/photo-1465014949162-e461f5408bc2?q=80&w=600&auto=format&fit=crop", category: "Pastries" },
+  { id: "c4", name: "Strawberry Shortcake", price: 3757, img: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=600&auto=format&fit=crop", category: "Signature" },
+  { id: "c5", name: "Lemon Blueberry Tart", price: 2338, img: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=600&auto=format&fit=crop", category: "Pastries" },
+  { id: "c6", name: "Matcha Green Tea Crepe", price: 4008, img: "https://images.unsplash.com/photo-1536680465769-a36969fdfe70?q=80&w=600&auto=format&fit=crop", category: "Pastries" }
 ];
 
 const INITIAL_REVIEWS: Review[] = [
@@ -128,7 +128,7 @@ export default function CakeOnCakeStorefront() {
       `📞 Phone: ${customerPhone}\n` +
       `✍️ Name on Cake: ${cakeLettering || "None"}\n` +
       `📍 Delivery Address: ${deliveryAddress}\n` +
-      `💰 Total Amount: $${totalAmount.toFixed(2)}\n\n` +
+      `💰 Total Amount: ₹${totalAmount.toLocaleString("en-IN")}\n\n` +
       `Thank you for baking with Cake-On-Cake!`
     );
 
@@ -218,7 +218,7 @@ export default function CakeOnCakeStorefront() {
                             <img src={item.img} alt={item.name} className="w-9 h-9 rounded-lg object-cover border border-[#EFEBE9]" />
                             <div>
                               <h5 className="font-bold text-xs text-[#3E2723] line-clamp-1">{item.name}</h5>
-                              <span className="text-[10px] text-[#8D6E63] font-mono">${item.price.toFixed(2)} x {item.quantity}</span>
+                              <span className="text-[10px] text-[#8D6E63] font-mono">₹{item.price.toLocaleString("en-IN")} x {item.quantity}</span>
                             </div>
                           </div>
                           <button onClick={() => removeFromCart(item.id)} className="p-1 text-slate-400 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -229,7 +229,7 @@ export default function CakeOnCakeStorefront() {
 
                   <div className="bg-[#4E342E] text-white p-3.5 rounded-xl flex items-center justify-between">
                     <span className="text-xs font-bold text-[#D7CCC8]">Total Amount Summary</span>
-                    <span className="text-lg font-black">${totalAmount.toFixed(2)}</span>
+                    <span className="text-lg font-black">₹{totalAmount.toLocaleString("en-IN")}</span>
                   </div>
 
                   <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-3">
@@ -257,7 +257,7 @@ export default function CakeOnCakeStorefront() {
 
             <div className="p-4 border-t border-[#EFEBE9] bg-[#FAF8F5]">
               {cart.length > 0 ? (
-                <button type="submit" form="checkout-form" className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-3 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">Confirm Order (${totalAmount.toFixed(2)})</button>
+                <button type="submit" form="checkout-form" className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-3 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">Confirm Order (₹{totalAmount.toLocaleString("en-IN")})</button>
               ) : (
                 <button disabled className="w-full bg-slate-200 text-slate-400 font-bold py-3 px-4 rounded-xl text-xs tracking-wider cursor-not-allowed">Dessert Box is Empty</button>
               )}
@@ -294,7 +294,7 @@ export default function CakeOnCakeStorefront() {
                   <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs px-2.5 py-0.5 rounded-md text-[10px] font-bold text-[#5D4037] border border-[#EFEBE9] shadow-2xs">{cake.category}</span>
                 </div>
                 <h4 className="font-black text-[#3E2723] text-base tracking-tight group-hover:text-[#7A5C53] transition-colors">{cake.name}</h4>
-                <div className="text-xl font-black text-[#2E1C1A] mt-1">${cake.price.toFixed(2)}</div>
+                <div className="text-xl font-black text-[#2E1C1A] mt-1">₹{cake.price.toLocaleString("en-IN")}</div>
               </div>
               <button onClick={() => addToBox(cake)} className="mt-5 w-full bg-[#FAF6F0] hover:bg-[#4E342E] text-[#5D4037] hover:text-white font-bold py-3 px-4 rounded-xl text-xs transition-all border border-[#EFEBE9] cursor-pointer">Add to Box</button>
             </div>
@@ -440,7 +440,7 @@ export default function CakeOnCakeStorefront() {
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-[#5D4037]">Review Message / Comments</label>
               <textarea 
-                required rows={3} placeholder="Tell us how the cake tasted, delivery speed, or custom design execution..." value={userComment} onChange={(e) => setUserComment(e.target.value)}
+                required rows={3} placeholder="Tell us how the cake tasted..." value={userComment} onChange={(e) => setUserComment(e.target.value)}
                 className="w-full text-xs px-3 py-2.5 bg-white border border-[#EFEBE9] rounded-xl focus:outline-none focus:border-[#8D6E63] resize-none text-slate-800" 
               />
             </div>
