@@ -121,9 +121,18 @@ export default function StorefrontHome() {
           {filteredProducts.map((cake) => (
             <div key={cake.id} className="group bg-white border border-[#EFEBE9] rounded-2xl p-4 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="relative mb-4 overflow-hidden rounded-xl bg-[#FAF7F2] aspect-4/3 w-full">
-                  <img src={cake.img || "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600&auto=format&fit=crop"} alt={cake.name} className="w-full h-48 object-cover" />
-                  <span className="absolute top-3 right-3 bg-white/95 px-2.5 py-0.5 rounded-md text-[10px] font-bold text-[#5D4037] border border-[#EFEBE9]">{cake.category}</span>
+                <div className="relative mb-4 overflow-hidden rounded-xl bg-[#FAF7F2] aspect-video w-full flex items-center justify-center border border-[#EFEBE9]/60">
+                  <img 
+                    src={cake.img || "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600&auto=format&fit=crop"} 
+                    alt={cake.name} 
+                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" 
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600&auto=format&fit=crop";
+                    }}
+                  />
+                  <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs px-2.5 py-0.5 rounded-md text-[10px] font-bold text-[#5D4037] border border-[#EFEBE9] shadow-2xs">
+                    {cake.category}
+                  </span>
                 </div>
                 <h3 className="text-lg font-bold text-[#4E342E]">{cake.name}</h3>
                 <p className="text-xl font-black text-[#5D4037] mt-1">${cake.price.toFixed(2)}</p>
