@@ -230,7 +230,7 @@ export default function AdminDesk() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-[#ECE7E0] rounded-full text-[12.5px] font-medium text-[#3A3128] hover:bg-[#FAF9F7] transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-[#ECE7E0] rounded-full text-[12.5px] font-medium text-[#3A3128] hover:bg-white transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Exit panel
           </Link>

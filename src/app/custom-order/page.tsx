@@ -49,7 +49,7 @@ export default function CustomOrderPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-white flex items-center justify-center p-6 text-center">
         <div className="max-w-md bg-white border border-[#EFEBE9] p-8 rounded-2xl shadow-sm space-y-4">
           <div className="text-5xl">✨🎂✨</div>
           <h1 className="text-2xl font-bold text-[#4E342E]">Design Sheet Submitted!</h1>
@@ -67,7 +67,7 @@ export default function CustomOrderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#3E2723] p-6 sm:p-12">
+    <div className="min-h-screen bg-white text-[#3E2723] p-6 sm:p-12">
       <div className="max-w-xl mx-auto">
         
         <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#8D6E63] hover:text-[#795548] mb-8 transition-colors">

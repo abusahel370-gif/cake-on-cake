@@ -37,14 +37,14 @@ const SEED_PRODUCTS = [
 ];
 
 const INITIAL_REVIEWS: Review[] = [
-  { review: "Best chocolate cake in town! Pure richness.", author: "Rohan M.", loc: "Kochi", rating: 5 },
-  { review: "Delivered on time and tasted absolutely amazing.", author: "Anjali K.", loc: "Kozhikode", rating: 5 },
-  { review: "The Red Velvet variant made our anniversary complete.", author: "Sneha P.", loc: "Kannur", rating: 5 },
-  { review: "Incredibly moist texture, not overly sweet. Pure balance.", author: "David E.", loc: "Thrissur", rating: 5 },
-  { review: "Beautiful execution on custom requirements.", author: "Meera J.", loc: "Wayanad", rating: 5 },
-  { review: "The frosting details were breathtaking.", author: "Arjun S.", loc: "Malappuram", rating: 5 },
-  { review: "Secure payment setup and wonderful packaging support.", author: "Gautham B.", loc: "Kochi", rating: 5 },
-  { review: "Same day dispatch loop worked flawlessly.", author: "Tina L.", loc: "Thrissur", rating: 5 }
+  { review: "Best chocolate cake in town! Pure richness.", author: "Rohan M.", loc: "Devala", rating: 5 },
+  { review: "Delivered on time and tasted absolutely amazing.", author: "Anjali K.", loc: "Pandalur", rating: 5 },
+  { review: "The Red Velvet variant made our anniversary complete.", author: "Sneha P.", loc: "Nadukani", rating: 5 },
+  { review: "Incredibly moist texture, not overly sweet. Pure balance.", author: "David E.", loc: "Devala", rating: 5 },
+  { review: "Beautiful execution on custom requirements.", author: "Meera J.", loc: "Pandalur", rating: 5 },
+  { review: "The frosting details were breathtaking.", author: "Arjun S.", loc: "Nadukani", rating: 5 },
+  { review: "Secure payment setup and wonderful packaging support.", author: "Gautham B.", loc: "Devala", rating: 5 },
+  { review: "Same day dispatch loop worked flawlessly.", author: "Tina L.", loc: "Pandalur", rating: 5 }
 ];
 
 export default function CakeOnCakeStorefront() {
@@ -64,7 +64,7 @@ export default function CakeOnCakeStorefront() {
   const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
   const [userComment, setUserComment] = useState("");
   const [userAuthor, setUserAuthor] = useState("");
-  const [userLoc, setUserLoc] = useState("Kochi");
+  const [userLoc, setUserLoc] = useState("Devala");
   const [userRating, setUserRating] = useState(5);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
@@ -162,7 +162,7 @@ export default function CakeOnCakeStorefront() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-[#3E2723] font-sans antialiased selection:bg-[#D7CCC8]">
+    <div className="min-h-screen bg-white text-[#3E2723] font-sans antialiased selection:bg-[#D7CCC8]">
       
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EFEBE9] px-4 sm:px-8 py-4 flex items-center justify-between shadow-xs">
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -171,8 +171,20 @@ export default function CakeOnCakeStorefront() {
             Cake-On-Cake <span className="text-[#A1887F] font-light text-sm">Store</span>
           </span>
         </Link>
+        <div className="hidden md:flex flex-1 max-w-sm mx-6">
+          <div className="relative w-full">
+            <input
+              type="text"
+              placeholder="Search for cakes..."
+              className="w-full text-xs px-4 py-2 pl-9 border border-[#EFEBE9] rounded-full bg-white focus:outline-none focus:border-[#8D6E63] text-[#3E2723]"
+            />
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A1887F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
         <div className="flex items-center gap-3">
-          <Link href="/custom" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 border border-[#EFEBE9] rounded-full text-xs font-bold text-[#5D4037] bg-[#FAF8F5] hover:bg-[#F5F2EB] transition-all">
+          <Link href="/custom" className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 border border-[#EFEBE9] rounded-full text-xs font-bold text-[#5D4037] bg-white hover:bg-[#F5F2EB] transition-all">
             ✨ Design Custom Cake
           </Link>
           <Link href="/admin" className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-bold transition-all">
@@ -189,11 +201,46 @@ export default function CakeOnCakeStorefront() {
         </div>
       </header>
 
+      <nav className="sticky top-[73px] z-30 bg-white border-b border-[#EFEBE9] shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-0">
+            {[
+              { label: "Cakes", emoji: "🎂" },
+              { label: "Best Sellers", emoji: "⭐" },
+              { label: "Anniversary Cake", emoji: "💖" },
+              { label: "Birthday Cake", emoji: "🎁" },
+              { label: "Occasions", emoji: "🎉" },
+              { label: "Gifts", emoji: "🎀" },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={() => {
+                  const map: Record<string, string> = {
+                    "Cakes": "All",
+                    "Best Sellers": "Signature",
+                    "Anniversary Cake": "Signature",
+                    "Birthday Cake": "Signature",
+                    "Occasions": "Pastries",
+                    "Gifts": "Pastries",
+                  };
+                  setActiveCategory(map[item.label] || "All");
+                  document.querySelector("main")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center gap-1.5 px-4 py-3.5 text-xs font-bold text-[#5D4037] hover:text-[#4E342E] hover:border-b-2 hover:border-[#4E342E] transition-all whitespace-nowrap shrink-0 border-b-2 border-transparent cursor-pointer"
+              >
+                <span>{item.emoji}</span>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end animate-fadeIn">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-xs" onClick={() => setIsCartOpen(false)} />
           <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto z-10 border-l border-[#EFEBE9]">
-            <div className="p-4 border-b border-[#EFEBE9] flex items-center justify-between bg-[#FAF8F5]">
+            <div className="p-4 border-b border-[#EFEBE9] flex items-center justify-between bg-white">
               <div className="flex items-center gap-2 text-[#4E342E]">
                 <ShoppingBag className="w-4 h-4 text-[#8D6E63]" />
                 <h3 className="font-black text-sm tracking-tight">Your Custom Dessert Box</h3>
@@ -211,7 +258,7 @@ export default function CakeOnCakeStorefront() {
                 <>
                   <div className="space-y-2">
                     <span className="text-[10px] uppercase font-black text-[#A1887F] tracking-wider block">Selected Layers</span>
-                    <div className="max-h-40 overflow-y-auto border border-[#EFEBE9] rounded-xl p-2 bg-[#FAF8F5]/50 divide-y divide-[#EFEBE9]/60">
+                    <div className="max-h-40 overflow-y-auto border border-[#EFEBE9] rounded-xl p-2 bg-white/50 divide-y divide-[#EFEBE9]/60">
                       {cart.map((item) => (
                         <div key={item.id} className="flex items-center justify-between py-2 first:pt-0 last:pb-0">
                           <div className="flex items-center gap-2.5">
@@ -236,26 +283,26 @@ export default function CakeOnCakeStorefront() {
                     <span className="text-[10px] uppercase font-black text-[#A1887F] tracking-wider block border-b pb-1">Delivery Details & Personalization</span>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#5D4037]">Recipient Name *</label>
-                      <input type="text" required placeholder="e.g. Rahul Sharma" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] focus:outline-none focus:border-[#8D6E63] text-slate-800" />
+                      <input type="text" required placeholder="e.g. Rahul Sharma" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-white focus:outline-none focus:border-[#8D6E63] text-slate-800" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#5D4037]">Contact Number *</label>
-                      <input type="tel" required placeholder="e.g. +91 98765 43210" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] focus:outline-none focus:border-[#8D6E63] text-slate-800" />
+                      <input type="tel" required placeholder="e.g. +91 98765 43210" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-white focus:outline-none focus:border-[#8D6E63] text-slate-800" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#5D4037] flex items-center justify-between"><span>Name Written On Cake</span><span className="text-[10px] text-slate-400 font-normal">Optional</span></label>
-                      <input type="text" placeholder="e.g. Happy Birthday!" value={cakeLettering} onChange={(e) => setCakeLettering(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] focus:outline-none focus:border-[#8D6E63] text-slate-800" maxLength={50} />
+                      <input type="text" placeholder="e.g. Happy Birthday!" value={cakeLettering} onChange={(e) => setCakeLettering(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-white focus:outline-none focus:border-[#8D6E63] text-slate-800" maxLength={50} />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#5D4037]">Complete Delivery Address *</label>
-                      <textarea required rows={2} placeholder="Flat, Street, Landmark Details..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-[#FAF8F5] focus:outline-none focus:border-[#8D6E63] resize-none text-slate-800" />
+                      <textarea required rows={2} placeholder="Flat, Street, Landmark Details..." value={deliveryAddress} onChange={(e) => setDeliveryAddress(e.target.value)} className="w-full text-xs px-3 py-1.5 border rounded-xl bg-white focus:outline-none focus:border-[#8D6E63] resize-none text-slate-800" />
                     </div>
                   </form>
                 </>
               )}
             </div>
 
-            <div className="p-4 border-t border-[#EFEBE9] bg-[#FAF8F5]">
+            <div className="p-4 border-t border-[#EFEBE9] bg-white">
               {cart.length > 0 ? (
                 <button type="submit" form="checkout-form" className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-3 px-4 rounded-xl text-xs tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">Confirm Order ({'\u20B9'}{totalAmount.toLocaleString("en-IN")})</button>
               ) : (
@@ -280,7 +327,7 @@ export default function CakeOnCakeStorefront() {
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {["All", "Signature", "Pastries"].map((cat) => (
-              <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all shrink-0 ${activeCategory === cat ? "bg-[#4E342E] text-white shadow-xs" : "bg-white text-[#6D4C41] border border-[#EFEBE9] hover:bg-[#FAF8F5]"}`}>{cat}</button>
+              <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all shrink-0 ${activeCategory === cat ? "bg-[#4E342E] text-white shadow-xs" : "bg-white text-[#6D4C41] border border-[#EFEBE9] hover:bg-white"}`}>{cat}</button>
             ))}
           </div>
         </div>
@@ -289,14 +336,14 @@ export default function CakeOnCakeStorefront() {
           {filteredProducts.map((cake) => (
             <div key={cake.id} className="group bg-white border border-[#EFEBE9]/80 rounded-3xl p-5 hover:shadow-xl hover:border-[#D7CCC8] transition-all flex flex-col justify-between">
               <div>
-                <div className="relative mb-4 overflow-hidden rounded-2xl bg-[#FAF7F2] aspect-video w-full flex items-center justify-center border border-[#EFEBE9]/40">
+                <div className="relative mb-4 overflow-hidden rounded-2xl bg-white aspect-video w-full flex items-center justify-center border border-[#EFEBE9]/40">
                   <img src={cake.img} alt={cake.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600&auto=format&fit=crop"; }} />
                   <span className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs px-2.5 py-0.5 rounded-md text-[10px] font-bold text-[#5D4037] border border-[#EFEBE9] shadow-2xs">{cake.category}</span>
                 </div>
                 <h4 className="font-black text-[#3E2723] text-base tracking-tight group-hover:text-[#7A5C53] transition-colors">{cake.name}</h4>
                 <div className="text-xl font-black text-[#2E1C1A] mt-1">{'\u20B9'}{cake.price.toLocaleString("en-IN")}</div>
               </div>
-              <button onClick={() => addToBox(cake)} className="mt-5 w-full bg-[#FAF6F0] hover:bg-[#4E342E] text-[#5D4037] hover:text-white font-bold py-3 px-4 rounded-xl text-xs transition-all border border-[#EFEBE9] cursor-pointer">Add to Box</button>
+              <button onClick={() => addToBox(cake)} className="mt-5 w-full bg-white hover:bg-[#4E342E] text-[#5D4037] hover:text-white font-bold py-3 px-4 rounded-xl text-xs transition-all border border-[#EFEBE9] cursor-pointer">Add to Box</button>
             </div>
           ))}
         </div>
@@ -312,7 +359,7 @@ export default function CakeOnCakeStorefront() {
               { icon: Award, title: "Premium Ingredients", desc: "Organic butter churns, pure vanilla bean pods, and gourmet dark cacao.", color: "text-emerald-600 bg-emerald-50" },
               { icon: ShieldCheck, title: "Secure Payments", desc: "Fully protected, 256-bit encrypted transactions for smooth processing.", color: "text-blue-600 bg-blue-50" },
             ].map((item, idx) => (
-              <div key={idx} className="bg-[#FAF8F5] p-6 rounded-2xl border border-[#EFEBE9]/60 text-left space-y-3">
+              <div key={idx} className="bg-white p-6 rounded-2xl border border-[#EFEBE9]/60 text-left space-y-3">
                 <div className={`p-3 rounded-xl w-fit ${item.color}`}><item.icon className="w-5 h-5" /></div>
                 <h4 className="font-bold text-sm text-[#3E2723]">{item.title}</h4>
                 <p className="text-xs text-[#6D4C41] leading-relaxed">{item.desc}</p>
@@ -365,7 +412,7 @@ export default function CakeOnCakeStorefront() {
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {reviews.map((rev, i) => (
-              <div key={i} className="bg-[#FAF8F5] border border-[#EFEBE9]/60 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#D7CCC8] transition-all">
+              <div key={i} className="bg-white border border-[#EFEBE9]/60 p-5 rounded-2xl flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#D7CCC8] transition-all">
                 <div className="space-y-2">
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, starIdx) => (
@@ -385,7 +432,7 @@ export default function CakeOnCakeStorefront() {
       </section>
 
       <section className="bg-white border-b border-[#EFEBE9] pb-16 pt-10 px-4">
-        <div className="max-w-xl mx-auto bg-[#FAF8F5] border border-[#EFEBE9] rounded-3xl p-6 sm:p-8 shadow-xs">
+        <div className="max-w-xl mx-auto bg-white border border-[#EFEBE9] rounded-3xl p-6 sm:p-8 shadow-xs">
           <div className="text-center space-y-1 mb-6">
             <h4 className="text-lg font-black text-[#3E2723] tracking-tight">Share Your Valuable Feedback</h4>
             <p className="text-xs text-[#8D6E63]">Your experience helps our bakery craft better happiness moments.</p>
@@ -430,7 +477,7 @@ export default function CakeOnCakeStorefront() {
                   value={userLoc} onChange={(e) => setUserLoc(e.target.value)}
                   className="w-full text-xs px-3 py-2.5 bg-white border border-[#EFEBE9] rounded-xl focus:outline-none focus:border-[#8D6E63] text-slate-800"
                 >
-                  {["Kozhikode", "Malappuram", "Kannur", "Wayanad", "Kochi", "Thrissur"].map((city) => (
+                  {["Devala", "Pandalur", "Nadukani"].map((city) => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </select>
@@ -455,7 +502,7 @@ export default function CakeOnCakeStorefront() {
       <section className="py-12 px-4 max-w-7xl mx-auto text-center border-b border-[#EFEBE9]">
         <h4 className="text-sm font-bold text-[#3E2723] flex items-center justify-center gap-1.5 mb-4"><MapPin className="w-4 h-4 text-rose-600" /> We Promptly Deliver Across:</h4>
         <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto">
-          {["Kozhikode", "Malappuram", "Kannur", "Wayanad", "Kochi", "Thrissur"].map((loc) => (
+          {["Devala", "Pandalur", "Nadukani"].map((loc) => (
             <span key={loc} className="bg-white border border-[#EFEBE9] px-4 py-1.5 rounded-full text-xs font-bold text-[#5D4037]">{loc}</span>
           ))}
         </div>
@@ -487,7 +534,7 @@ export default function CakeOnCakeStorefront() {
               { q: "Can I customize my cake design specification?", a: "Absolutely. Tap our 'Design Custom Cake' tab to submit structural specifications and lettering requirements." },
               { q: "What payment methods are securely accepted?", a: "We support major Credit/Debit processing cards, modern wallet systems, Net Banking, and local UPI rails." }
             ].map((faq, idx) => (
-              <div key={idx} className="border border-[#EFEBE9] rounded-xl overflow-hidden bg-[#FAF8F5]">
+              <div key={idx} className="border border-[#EFEBE9] rounded-xl overflow-hidden bg-white">
                 <button onClick={() => toggleFaq(idx)} className="w-full flex items-center justify-between p-4 text-left font-bold text-xs sm:text-sm text-[#3E2723] hover:bg-[#F5F2EB] transition-colors cursor-pointer">
                   <span>{faq.q}</span>
                   {openFaq === idx ? <ChevronUp className="w-4 h-4 text-[#8D6E63]" /> : <ChevronDown className="w-4 h-4 text-[#8D6E63]" />}
